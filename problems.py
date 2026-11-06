@@ -34,6 +34,11 @@ class Gridworld:
       self.obstacles = frozenset()
       self.state = self.start
 
+   def inBounds(self, cell):
+      return 0 <= cell[0] < self.size and 0 <= cell[1] < self.size
+   
+   def isOpen(self, cell):
+      return self.inBounds(cell) and cell not in self.obstacles
 
 
 class Game:
