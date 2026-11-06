@@ -40,6 +40,22 @@ class Gridworld:
    def isOpen(self, cell):
       return self.inBounds(cell) and cell not in self.obstacles
 
+   def pathExists(self, obstacles):
+      seen = {self.start}
+      queue = deque([self.start])
+
+      while queue:
+         cell = queue.popleft()
+         if cell == self.goal:
+            return True
+         
+         for move in moves:
+            nxt = stepCell(cell, move)
+            if self.inBounds(nxt) and nxt not in obstacles and nxt not in seen:
+               seen.add(nxt)
+               queue.append(nxt)
+      return False
+   
 
 class Game:
     def __init__(self, problem, pZero, pOne,verbose=True):
