@@ -5,6 +5,23 @@ This file will contain your the code for your problems.
 import numpy as np
 import cv2
 
+import random
+from collections import deque
+
+
+moves = {"U": (-1, 0), "D": (1, 0), "L": (0, -1), "R": (0, 1)}
+
+
+def stepCell(cell, move):
+   dr, dc = moves[move]
+   return (cell[0] + dr, cell[1] + dc)
+
+
+def manhattan(a, b):
+   return abs(a[0] - b[0] + abs(a[1] - b[1]))
+
+
+
 class Game:
     def __init__(self, problem, pZero, pOne,verbose=True):
       self.problem = problem      
