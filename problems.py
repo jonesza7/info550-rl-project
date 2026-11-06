@@ -21,6 +21,20 @@ def manhattan(a, b):
    return abs(a[0] - b[0] + abs(a[1] - b[1]))
 
 
+class Gridworld:
+   """n x n grid where state is agent's cell with row,col"""
+
+   def __init__(self, size=8, obstacleDensity=0.15, seed=0, stepReward=-0.01, goalReward=1.0):
+      self.size = size
+      self.start = (0, 0)
+      self.goal = (size - 1, size - 1)
+      self.stepReward = stepReward
+      self.goalReward = goalReward
+      self.maxSteps = 4 * size * size
+      self.obstacles = frozenset()
+      self.state = self.start
+
+
 
 class Game:
     def __init__(self, problem, pZero, pOne,verbose=True):
