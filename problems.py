@@ -31,7 +31,7 @@ class Gridworld:
       self.stepReward = stepReward
       self.goalReward = goalReward
       self.maxSteps = 4 * size * size
-      self.obstacles = frozenset()
+      self.obstacles = self.makeObstacles(obstacleDensity, random.Random(seed))
       self.state = self.start
 
    def inBounds(self, cell):
@@ -56,6 +56,15 @@ class Gridworld:
                queue.append(nxt)
       return False
    
+   def makeObstacles(self, density, rng):
+      cells = [(r, c) for r in range(self.size) for c in range(self.size)
+               if (r, c) not in (self.start, self.goal)]
+      cnt = int(density * self.size * self.size)
+      while True:
+         obstacles = frozenset(rng.sample(cells, cnt))
+         if self.pathExists(obstacles):
+            return obstacles
+
 
 class Game:
     def __init__(self, problem, pZero, pOne,verbose=True):
