@@ -245,12 +245,13 @@ class Game:
 class SinglePlayerGame:
    "Runs one game of a 1 player problem (gridworld or snake)"
 
-   def __init__(self, problem, player, verbose=True, maxMoves=None, delay=0.0):
+   def __init__(self, problem, player, verbose=True, maxMoves=None, delay=0.0, stopAtScore=None):
       self.problem = problem
       self.player = player
       self.verbose = verbose
       self.maxMoves = maxMoves if maxMoves is not None else problem.maxSteps
       self.delay = delay
+      self.stopAtScore = stopAtScore
 
    def playGame(self):
       self.problem.reset()
@@ -259,6 +260,9 @@ class SinglePlayerGame:
       if self.verbose:
          self.problem.showState()
       while not self.problem.isTerminal() and moves < self.maxMoves:
+         if self.stopAtScore is not None and self.problem.getScore() >= self.stopAtScore:
+            break
+         move = self.player.getMove(self.problem)
          move = self.player.getMove(self.problem)
          totalReward += self.problem.doMove(move)
          moves += 1
