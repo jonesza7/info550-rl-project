@@ -4,7 +4,7 @@ This file will contain your the code for your problems.
 
 import numpy as np
 import cv2
-
+import time
 import random
 from collections import deque
 
@@ -18,7 +18,7 @@ def stepCell(cell, move):
 
 
 def manhattan(a, b):
-   return abs(a[0] - b[0] + abs(a[1] - b[1]))
+   return abs(a[0] - b[0]) + abs(a[1] - b[1])
 
 
 class Gridworld:
@@ -125,7 +125,7 @@ class Game:
          self.problem.showState()               
     def playGame(self):
       pCur=0
-      while self.problem.isTerminal()==False:           
+      while self.problem.isTerminal()==False:
          move = self.players[pCur].getMove(self.problem)           
          self.problem.doMove(move)
          if self.verbose:
@@ -143,7 +143,38 @@ class Game:
       if self.verbose:
          self.problem.showState(4000)
       return wIndex
-              
+
+class SinglePlayerGame:
+   "Runs one game of a 1 player problem (gridworld or snake)"
+
+   def __init__(self, problem, player, verbose=True, maxMoves=None, delay=0.0):
+      self.problem = problem
+      self.player = player
+      self.verbose = verbose
+      self.maxMoves = maxMoves if maxMoves is not None else problem.maxSteps
+      self.delay = delay
+
+   def playGame(self):
+      self.problem.reset()
+      totalReward = 0.0
+      moves = 0
+      if self.verbose:
+         self.problem.showState()
+      while not self.problem.isTerminal() and moves < self.maxMoves:
+         move = self.player.getMove(self.problem)
+         totalReward += self.problem.doMove(move)
+         moves += 1
+         if self.verbose:
+            print(f"Move {moves}: {move}")
+            self.problem.showState()
+            time.sleep(self.delay)
+      score = self.problem.getScore()
+      if self.verbose:
+         print(f"{self.player} finished after {moves} moves. Score {score}, total reward: {totalReward:.2f}")
+      return score, totalReward, moves
+
+
+
 class TicTacToe:
    def __init__(self):
       self.state = np.zeros((3,3))      
