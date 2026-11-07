@@ -98,6 +98,24 @@ class Gridworld:
          state = self.state
       return 1 if state == self.goal else 0
 
+   def showState(self,state=None):
+      if state is None:
+         state = self.state
+      for r in range(self.size):
+         row = []
+         for c in range(self.size):
+            cell= (r,c)
+            if cell == state:
+               row.append("A")
+            elif cell == self.goal:
+               row.append("G")
+            elif cell in self.obstacles:
+               row.append("#")
+            else:
+               row.append(".")
+         print(" ".join(row))
+      print()
+
 class Game:
     def __init__(self, problem, pZero, pOne,verbose=True):
       self.problem = problem      
