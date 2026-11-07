@@ -65,6 +65,19 @@ class Gridworld:
          if self.pathExists(obstacles):
             return obstacles
 
+   def reset(self):
+      self.state = self.start
+      return self.state
+   
+   def getLegalMoves(self, state=None):
+      if state is None:
+         state = self.state
+      return [move for move in moves if self.isOpen(stepCell(state, move))]
+
+   def getSuccessor(self, move, state):
+      return stepCell(state, move)
+   
+
 
 class Game:
     def __init__(self, problem, pZero, pOne,verbose=True):
