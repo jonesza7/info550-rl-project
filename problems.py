@@ -116,6 +116,104 @@ class Gridworld:
          print(" ".join(row))
       print()
 
+class Snake:
+    """n x n Snake; State is like (body, food, alive); body is a tuple of cells and head first."""
+
+    def __init__(self, size=5, seed=0, foodReward=1.0, deathReward=-1.0, stepReward=-0.01):
+        self.size = size
+        self.foodReward = foodReward
+        self.deathReward = deathReward
+        self.stepReward = stepReward
+        self.maxSteps = 20 * size * size
+        self.rng = random.Random(seed)
+        self.reset()
+
+    def inBounds(self, cell):
+        return 0 <= cell[0] < self.size and 0 <= cell[1] < self.size
+
+    def placeFood(self, body):
+        free = [(r, c) for r in range(self.size) for c in range(self.size) if (r, c) not in body]
+        return self.rng.choice(free) if free else None
+
+    def reset(self):
+        mid = self.size // 2
+        body = ((mid, mid), (mid, mid - 1))
+        self.state = (body, self.placeFood(body), True)
+        return self.state
+
+    def nextBody(self, body, food, move):
+        head = stepCell(body[0], move)
+        if head == food:
+            return (head,) + body
+        return (head,) + body[:-1]
+
+    def isFatal(self, body, food, move):
+        head = stepCell(body[0], move)
+        if not self.inBounds(head):
+            return True
+        blocking = set(body) if head == food else set(body[:-1])
+        blocking.add(body[1])
+        return head in blocking
+
+    def getLegalMoves(self, state=None):
+        if state is None:
+            state = self.state
+        body, food, alive = state
+        safe = [move for move in moves if not self.isFatal(body, food, move)]
+        return safe if safe else list(moves)
+
+    def getSuccessor(self, move, state):
+        body, food, alive = state
+        if self.isFatal(body, food, move):
+            return (body, food, False)
+        newBody = self.nextBody(body, food, move)
+        if newBody[0] == food:
+            food = self.placeFood(newBody)
+        return (newBody, food, True)
+
+    def getReward(self, state, nextState):
+        if not nextState[2]:
+            return self.deathReward
+        if len(nextState[0]) > len(state[0]):
+            return self.foodReward
+        return self.stepReward
+
+    def isTerminal(self, state=None):
+        if state is None:
+            state = self.state
+        body, food, alive = state
+        return not alive or food is None
+
+    def doMove(self, move):
+        nextState = self.getSuccessor(move, self.state)
+        reward = self.getReward(self.state, nextState)
+        self.state = nextState
+        return reward
+
+    def getScore(self, state=None):
+        if state is None:
+            state = self.state
+        return len(state[0]) - 2
+
+    def showState(self, state=None):
+        if state is None:
+            state = self.state
+        body, food, alive = state
+        for r in range(self.size):
+            row = []
+            for c in range(self.size):
+                cell = (r, c)
+                if cell == body[0]:
+                    row.append("H" if alive else "X")
+                elif cell in body:
+                    row.append("o")
+                elif cell == food:
+                    row.append("*")
+                else:
+                    row.append(".")
+            print(" ".join(row))
+        print()
+
 class Game:
     def __init__(self, problem, pZero, pOne,verbose=True):
       self.problem = problem      
