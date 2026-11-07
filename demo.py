@@ -1,18 +1,36 @@
-import problems as prb
-import algorithms as alg
+from problems import Gridworld, SinglePlayerGame
+from algorithms import RandomAgent
 
-'''
-This file will contain the code needed to run a demonstration of your project. 
+"""
+Demo: random agent attempting each problem
+"""
 
-For the progress report, it should contain code that shows a brief demonstration of random agents attempting to solve each problem. 
+demo_moves = 30
+demo_delay = 0.1
+baseline_games = 20
 
-For the final report, it should contain code that shows a brief demonstration of each algorithm attempting to solve each problem. 
 
-In both cases, to make sure we can grade these all in time, please ensure that each demonstration is just long enough to show some
-meaningful behavior. If your problem is chess playing, for example, you might show 5 moves from each player, where one player uses one 
-algorithm and one player uses another. If your problem is snake, you might show game long enough for the player to eat two apples or die
-(whichever comes first).
-'''
+def showOneGame(name, problem):
+    print(f"--- {name}: random agent and up to {demo_moves} moves ---")
+    SinglePlayerGame(problem, RandomAgent(), maxMoves=demo_moves, delay=demo_delay).playGame()
+    print()
 
-demoGame = prb.Game(prb.TicTacToe(),alg.RandomAgent(),alg.RandomAgent())
-demoGame.playGame()
+
+def summarize(name, problem):
+    scores, rewards, movesUsed = [], [], []
+    for _ in range(baseline_games):
+        score, reward, moves = SinglePlayerGame(problem, RandomAgent(), verbose=False).playGame()
+        scores.append(score)
+        rewards.append(reward)
+        movesUsed.append(moves)
+    n = baseline_games
+    print(f"{name}: average score {sum(scores) / n:.2f}, "
+          f"average reward {sum(rewards) / n:.2f} + average moves {sum(movesUsed) / n:.0f}")
+
+
+if __name__ == "__main__":
+    showOneGame("Gridworld 8x8", Gridworld(size=8, seed=0))
+
+    print(f"--- Random agent baseline + {baseline_games} games per size ---")
+    for size in (5, 10, 20, 40):
+        summarize(f"Gridworld {size}x{size}", Gridworld(size=size, seed=0))
