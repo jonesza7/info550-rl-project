@@ -77,7 +77,26 @@ class Gridworld:
    def getSuccessor(self, move, state):
       return stepCell(state, move)
    
-
+   def getReward(self, state, nextState):
+      if nextState == self.goal:
+         return self.goalReward
+      return self.stepReward
+   
+   def isTerminal(self, state=None):
+      if state is None:
+         state = self.state
+      return state == self.goal
+   
+   def doMove(self, move):
+      nextState = self.getSuccessor(move, self.state)
+      reward = self.getReward(self.state, nextState)
+      self.state = nextState
+      return reward
+   
+   def getScore(self, state=None):
+      if state is None:
+         state = self.state
+      return 1 if state == self.goal else 0
 
 class Game:
     def __init__(self, problem, pZero, pOne,verbose=True):
